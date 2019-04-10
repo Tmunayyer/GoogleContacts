@@ -28,7 +28,6 @@ app.get('/googAutherized', (req, res) => {
   //generate a token
   google.generateToken(code, (token) => {
     //retrieve google's id for user
-
     google.getUserInfo(token, ({ data }) => {
       //save user to DB
       pg.saveUser(data.id, token.access_token, req.sessionID, () => {

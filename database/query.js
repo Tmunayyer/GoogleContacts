@@ -16,12 +16,26 @@ helpers.hasToken = (session, cb) => {
   });
 };
 
-helpers.saveUser = (user, access_token, session, cb) => {
+helpers.saveUser = (googleuser, access_token, session, cb) => {
   let queryString = `INSERT INTO users (googleuser, access_token, session)
-                     VALUES ('${user}', '${access_token}', '${session}')`;
-  console.log('my query string', queryString);
+                     VALUES ('${googleuser}', '${access_token}', '${session}')`;
   client.query(queryString, (err, result) => {
-    if (err) return console.log('Error saving user:', err);
+    if (err) {
+      //duplicate key, user exists, update session and redirect home
+      if (err.code === '23505') {
+        queryString = `UPDATE users
+                       SET session = '${session}'
+                       WHERE googleuser = '${googleuser}';`;
+        client.query(queryString, (err, result) => {
+          if (err) return console.log('Error updating user:', err);
+          //finished saving, redirect
+          cb();
+        });
+      } else {
+        return console.log('Error saving user:', err);
+      }
+    }
+    //finished saving, redirect
     cb();
   });
 };

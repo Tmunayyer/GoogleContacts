@@ -60,7 +60,7 @@ helpers.getData = (session, cb) => {
     const params = {
       resourceName: 'people/me',
       pageSize: '100',
-      personFields: 'me,names,phoneNumbers,emailAddresses'
+      personFields: 'names,phoneNumbers,emailAddresses'
     };
     people.people.connections.list(params, (err, data) => {
       if (err) {
