@@ -1,6 +1,8 @@
 const { google } = require('googleapis');
 const fs = require('fs');
 
+const db = require('../database/query.js');
+
 /* NOTES
 
   This was new to me.
@@ -12,9 +14,8 @@ const fs = require('fs');
 */
 
 // Using readFileSync to ensure this is finished before server starts.
-let CREDENTIALS = JSON.parse(fs.readFileSync('./google/credentials.json'));
+let CREDENTIALS = JSON.parse(fs.readFileSync('./server/credentials.json'));
 let SCOPES = ['https://www.googleapis.com/auth/contacts.readonly'];
-let TOKEN_PATH = './token.json';
 
 // To be made module.exports
 let helpers = {};
@@ -28,7 +29,16 @@ const makeOAuth2Client = () => {
 };
 
 //function to get new token upon failure
-const getNewAuthorizationCode = (oAuth2Client, res) => {
+// const getNewAuthorizationCode = (oAuth2Client, res) => {
+//   const authURI = oAuth2Client.generateAuthUrl({
+//     access_type: 'offline',
+//     scope: SCOPES
+//   });
+//   res.redirect(authURI);
+// };
+
+helpers.authorize = (res) => {
+  let oAuth2Client = makeOAuth2Client();
   const authURI = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES
@@ -36,20 +46,29 @@ const getNewAuthorizationCode = (oAuth2Client, res) => {
   res.redirect(authURI);
 };
 
-helpers.authorize = (res, cb) => {
+helpers.getAuthURI = () => {
   let oAuth2Client = makeOAuth2Client();
-
-  //db.query with for the cookie.
-  // if we get the result,
-  // respond true and provide data
-  // if we get null
-  // getNewAuthorizationCode!
-  fs.readFile(TOKEN_PATH, (err, token) => {
-    if (err) return getNewAuthorizationCode(oAuth2Client, res);
-    oAuth2Client.setCredentials(JSON.parse(token));
-    cb(oAuth2Client);
+  const authURI = oAuth2Client.generateAuthUrl({
+    access_type: 'offline',
+    scope: SCOPES
   });
+  return authURI;
 };
+
+// helpers.authorize = (res, cb) => {
+//   let oAuth2Client = makeOAuth2Client();
+
+//   //db.query with for the cookie.
+//   // if we get the result,
+//   // respond true and provide data
+//   // if we get null
+//   // getNewAuthorizationCode!
+//   fs.readFile(TOKEN_PATH, (err, token) => {
+//     if (err) return getNewAuthorizationCode(oAuth2Client, res);
+//     oAuth2Client.setCredentials(JSON.parse(token));
+//     cb(oAuth2Client);
+//   });
+// };
 
 helpers.getData = (auth, cb) => {
   const service = google.people({ version: 'v1', auth });
@@ -66,13 +85,12 @@ helpers.getData = (auth, cb) => {
   });
 };
 
-helpers.generateAccessToken = (code, cb) => {
+helpers.generateAccessToken = (code, req, cb) => {
   let oAuth2Client = makeOAuth2Client();
   oAuth2Client.getToken(code, (err, token) => {
     if (err) return console.log('Error retrieving token:', err);
     oAuth2Client.setCredentials(token);
-    //save to database
-    cb(oAuth2Client);
+    cb();
   });
 };
 
