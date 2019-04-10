@@ -16,9 +16,10 @@ helpers.hasToken = (session, cb) => {
   });
 };
 
-helpers.saveUser = (access_token, session, cb) => {
-  let queryString = `INSERT INTO users (access_token, session)
-                     VALUES ('${access_token}', '${session}')`;
+helpers.saveUser = (user, access_token, session, cb) => {
+  let queryString = `INSERT INTO users (googleuser, access_token, session)
+                     VALUES ('${user}', '${access_token}', '${session}')`;
+  console.log('my query string', queryString);
   client.query(queryString, (err, result) => {
     if (err) return console.log('Error saving user:', err);
     cb();
