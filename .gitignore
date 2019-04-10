@@ -62,3 +62,6 @@ typings/
 
 # google
 credentials.json
+
+# bundle
+bundle.js

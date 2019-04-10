@@ -9,9 +9,17 @@
     "express": "^4.16.4",
     "express-session": "^1.15.6",
     "googleapis": "^39.2.0",
+    "react": "^16.8.6",
+    "react-dom": "^16.8.6",
     "uuid": "^3.3.2"
   },
-  "devDependencies": {},
+  "devDependencies": {
+    "@babel/core": "^7.4.3",
+    "@babel/preset-env": "^7.4.3",
+    "@babel/preset-react": "^7.0.0",
+    "babel-loader": "^8.0.5",
+    "webpack": "^4.29.6"
+  },
   "scripts": {
     "test": "echo \"Error: no test specified\" && exit 1"
   },

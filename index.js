@@ -31,4 +31,8 @@ app.get('/googAutherized', (req, res) => {
   });
 });
 
+app.get('/getGoogleData', (req, res) => {
+  console.log('GetGoogleData:', req.query);
+});
+
 app.listen(port, console.log('Listening on localhost:', port));
