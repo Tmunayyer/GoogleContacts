@@ -5,11 +5,11 @@ const db = require('../database/query.js');
 
 /* NOTES
 
-  This was new to me.
-  Source: https://developers.google.com/people/quickstart/nodejs
+  oAuth was completely new to me.
+  Main source: https://developers.google.com/people/quickstart/nodejs
 
-    I used this page to heavily influence how I handles this. Some functions
-    are complete rips, others are tweaked heavily to my needs.
+    Most of what I got from their quickstart has been tweaked heavily
+    to fit my needs.
 
 */
 
@@ -28,14 +28,14 @@ const makeOAuth2Client = () => {
   );
 };
 
-//function to get new token upon failure
-// const getNewAuthorizationCode = (oAuth2Client, res) => {
-//   const authURI = oAuth2Client.generateAuthUrl({
-//     access_type: 'offline',
-//     scope: SCOPES
-//   });
-//   res.redirect(authURI);
-// };
+helpers.generateToken = (code, cb) => {
+  let oAuth2Client = makeOAuth2Client();
+  console.log('code passed into generateToken:', code);
+  oAuth2Client.getToken(code, (err, token) => {
+    if (err) return console.log('Error generating token:', err);
+    cb(token);
+  });
+};
 
 helpers.authorize = (res) => {
   let oAuth2Client = makeOAuth2Client();
@@ -46,51 +46,22 @@ helpers.authorize = (res) => {
   res.redirect(authURI);
 };
 
-helpers.getAuthURI = () => {
+helpers.getData = (session, cb) => {
   let oAuth2Client = makeOAuth2Client();
-  const authURI = oAuth2Client.generateAuthUrl({
-    access_type: 'offline',
-    scope: SCOPES
-  });
-  return authURI;
-};
 
-// helpers.authorize = (res, cb) => {
-//   let oAuth2Client = makeOAuth2Client();
-
-//   //db.query with for the cookie.
-//   // if we get the result,
-//   // respond true and provide data
-//   // if we get null
-//   // getNewAuthorizationCode!
-//   fs.readFile(TOKEN_PATH, (err, token) => {
-//     if (err) return getNewAuthorizationCode(oAuth2Client, res);
-//     oAuth2Client.setCredentials(JSON.parse(token));
-//     cb(oAuth2Client);
-//   });
-// };
-
-helpers.getData = (auth, cb) => {
-  const service = google.people({ version: 'v1', auth });
-  const params = {
-    resourceName: 'people/me',
-    pageSize: '10',
-    personFields: 'names,emailAddresses'
-  };
-
-  //this is the google API request
-  service.people.connections.list(params, (err, data) => {
-    const myData = data.data.connections;
-    cb(err, myData);
-  });
-};
-
-helpers.generateAccessToken = (code, req, cb) => {
-  let oAuth2Client = makeOAuth2Client();
-  oAuth2Client.getToken(code, (err, token) => {
-    if (err) return console.log('Error retrieving token:', err);
+  db.hasToken(session, (token) => {
     oAuth2Client.setCredentials(token);
-    cb();
+    const service = google.people({ version: 'v1', auth: oAuth2Client });
+    const params = {
+      resourceName: 'people/me',
+      pageSize: '10',
+      personFields: 'names,emailAddresses'
+    };
+    service.people.connections.list(params, (err, data) => {
+      if (err) return console.log('Error contacting google:', err);
+      const myData = data.data.connections;
+      cb(myData);
+    });
   });
 };
 

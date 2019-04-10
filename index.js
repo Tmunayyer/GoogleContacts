@@ -13,9 +13,8 @@ app.use(bodyParser.json());
 app.use(getSession());
 
 app.get('/', (req, res) => {
-  dbHelpers.getAuth(req.sessionID, (err, auth) => {
-    if (err) return res.send('We did something wrong! 500');
-    if (auth) {
+  dbHelpers.hasToken(req.sessionID, (token) => {
+    if (token) {
       res.sendFile(__dirname + '/client/dist/app.html');
     } else {
       googHelpers.authorize(res);
@@ -23,16 +22,22 @@ app.get('/', (req, res) => {
   });
 });
 
+//recieve google's redirect
 app.get('/googAutherized', (req, res) => {
   const { code } = req.query;
-  //save code to the database
-  dbHelpers.saveAuth(code, req.sessionID, () => {
-    res.redirect('/');
+  //generate a token
+  googHelpers.generateToken(code, (token) => {
+    //save refresh token
+    dbHelpers.saveUser(token.access_token, req.sessionID, () => {
+      res.redirect('/');
+    });
   });
 });
 
 app.get('/getGoogleData', (req, res) => {
-  console.log('GetGoogleData:', req.query);
+  googHelpers.getData(req.sessionID, (data) => {
+    res.send(data);
+  });
 });
 
 app.listen(port, console.log('Listening on localhost:', port));
