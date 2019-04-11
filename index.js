@@ -1,6 +1,8 @@
+//modules
 const express = require('express');
 const bodyParser = require('body-parser');
 
+//helpers
 const getSession = require('./server/session.js');
 const pg = require('./database/query.js');
 const google = require('./server/google.js');
@@ -8,6 +10,7 @@ const google = require('./server/google.js');
 const app = express();
 const port = 4000;
 
+//middlewear
 app.use(express.static('client/dist'));
 app.use(bodyParser.json());
 app.use(getSession());
@@ -80,6 +83,16 @@ app.get('/refreshContactList', (req, res) => {});
 app.get('/logout', (req, res) => {});
 
 //save comment in the DB to a contact
-app.post('/contacts', (req, res) => {});
+app.post('/contacts', (req, res) => {
+  let data = req.body.data;
+  pg.saveComment(res.sessionID, data, (err, result) => {
+    if (err) {
+      res.send('We made a mistake!');
+      console.log('Mistake saving to contacts:', err);
+    } else {
+      res.send('Saved!');
+    }
+  });
+});
 
 app.listen(port, console.log('Listening on localhost:', port));

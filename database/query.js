@@ -93,4 +93,13 @@ helpers.getComments = (session, cb) => {
   });
 };
 
+helpers.saveComment = (session, data, cb) => {
+  let queryString = `UPDATE comments
+                     SET comment='${data.comment}'
+                     WHERE id='${data.id}';`;
+  pg.query(queryString, (err, result) => {
+    cb(err, result);
+  });
+};
+
 module.exports = helpers;
