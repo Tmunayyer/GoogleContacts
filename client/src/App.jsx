@@ -3,6 +3,7 @@ import { Component } from 'react';
 
 import axios from 'axios';
 
+import Navbar from './components/Navbar.jsx';
 import Feed from './components/Feed.jsx';
 
 class App extends Component {
@@ -67,15 +68,18 @@ class App extends Component {
   render() {
     return (
       <>
-        <h1>Comtacts! Comment on your Google Contacts!</h1>
-        <Feed
-          contacts={this.state.contacts}
-          edit={this.state.activeEdit}
-          comment={this.state.comment}
-          handleInputChange={this.handleInputChange}
-          editButtonHandler={this.editButtonClickHandler}
-          saveCommentHandler={this.saveCommentHandler}
-        />
+        <Navbar />
+        <h1 className="tagline">Comment on your Google Contacts!</h1>
+        <div className="container">
+          <Feed
+            contacts={this.state.contacts}
+            edit={this.state.activeEdit}
+            comment={this.state.comment}
+            handleInputChange={this.handleInputChange}
+            editButtonHandler={this.editButtonClickHandler}
+            saveCommentHandler={this.saveCommentHandler}
+          />
+        </div>
       </>
     );
   }

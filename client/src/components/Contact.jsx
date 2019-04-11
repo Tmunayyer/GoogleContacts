@@ -16,27 +16,52 @@ const Contact = (props) => {
     if (id === edit) {
       jsx = (
         <>
-          <input type="text" value={editComment} onChange={handleInputChange} />
-          <button onClick={(e) => saveCommentHandler(e, id)}>
-            Save Comment
-          </button>
+          <textarea
+            cols="50"
+            rows="2"
+            type="text"
+            value={editComment}
+            maxLength="100"
+            onChange={handleInputChange}
+          />
+          <div>
+            <button onClick={(e) => saveCommentHandler(e, id)}>
+              Save Comment
+            </button>
+          </div>
         </>
       );
     } else {
       jsx = (
-        <button onClick={(e) => editButtonHandler(e, id, comment)}>Edit</button>
+        <>
+          <div className="comment">{comment}</div>
+          <div>
+            <button onClick={(e) => editButtonHandler(e, id, comment)}>
+              Edit
+            </button>
+          </div>
+        </>
       );
     }
     return jsx;
   };
 
   return (
-    <div>
-      <div>{name}</div>
-      <div>{phone_number}</div>
-      <div>{email}</div>
-      <div>{comment}</div>
-      {conRender()}
+    <div className="contact">
+      <div className="left-group">
+        <div className="name">{name}</div>
+        <div className="info">
+          <div>Phone: {phone_number}</div>
+          <div>Email: {email}</div>
+        </div>
+      </div>
+      <div className="right-group">
+        <div className="comment">
+          <div>Notes:</div>
+
+          {conRender()}
+        </div>
+      </div>
     </div>
   );
 };
