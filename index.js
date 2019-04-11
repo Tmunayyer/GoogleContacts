@@ -12,11 +12,15 @@ app.use(express.static('client/dist'));
 app.use(bodyParser.json());
 app.use(getSession());
 
+//homepage
 app.get('/', (req, res) => {
+  //if we have this user in the db
   pg.hasToken(req.sessionID, (token) => {
     if (token) {
+      //send them application
       res.sendFile(__dirname + '/client/dist/app.html');
     } else {
+      //send them to google to be authorized
       google.authorize(res);
     }
   });
@@ -37,36 +41,20 @@ app.get('/googAutherized', (req, res) => {
   });
 });
 
-app.get('/getGoogleData', (req, res) => {
-  //pass response incase of failure
-  google.getData(req.sessionID, (err, data) => {
-    if (err) {
-      if (err.errors[0].message === 'Invalid Credentials') {
-        //reauthorize
-        //this is not working for some reason because of cors
-        // i know this is a problem i dont know how to fix it
-        google.authorize(res);
-      } else {
-        return console.log('Error getting google people data:', err);
-      }
-    } else {
-      res.send(data);
-    }
-  });
-});
-
-app.get('/appData', (req, res) => {
+//provide data on app load
+app.get('/contacts', (req, res) => {
+  //does the user have contacts in the DB?
   pg.getComments(req.sessionID, (err, data) => {
     if (err) {
       res.send('We made a mistake!');
       console.log('Error getting comments:', err);
     } else {
+      //if we do not have ANY data in DB
       if (data.length === 0) {
-        //scenario 1 = new user, need to get contacts from google
+        //get the data from the contacts
         google.getData(req.sessionID, (err, googleData) => {
           if (err) return console.log('problem getting data from google:', err);
-          //save this data to the DB
-
+          //save contact to the DB
           pg.saveContacts(req.sessionID, googleData, (err, result) => {
             //restart this process with saved contacts
             if (err) {
@@ -78,12 +66,20 @@ app.get('/appData', (req, res) => {
           });
         });
       } else {
+        //send down saved contacts
         res.send(data);
       }
     }
   });
 });
 
+//responds to a button on the page to refresh contacts list
 app.get('/refreshContactList', (req, res) => {});
+
+//responds to button log the user out, remove authorization code from db
+app.get('/logout', (req, res) => {});
+
+//save comment in the DB to a contact
+app.post('/contacts', (req, res) => {});
 
 app.listen(port, console.log('Listening on localhost:', port));
