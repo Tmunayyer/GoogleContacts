@@ -55,6 +55,35 @@ app.get('/getGoogleData', (req, res) => {
   });
 });
 
+app.get('/appData', (req, res) => {
+  pg.getComments(req.sessionID, (err, data) => {
+    if (err) {
+      res.send('We made a mistake!');
+      console.log('Error getting comments:', err);
+    } else {
+      if (data.length === 0) {
+        //scenario 1 = new user, need to get contacts from google
+        google.getData(req.sessionID, (err, googleData) => {
+          if (err) return console.log('problem getting data from google:', err);
+          //save this data to the DB
+
+          pg.saveContacts(req.sessionID, googleData, (err, result) => {
+            //restart this process with saved contacts
+            if (err) {
+              res.send('Error saving contacts');
+              console.log('Error saving contacts:', err);
+            } else {
+              res.redirect('/appData');
+            }
+          });
+        });
+      } else {
+        res.send(data);
+      }
+    }
+  });
+});
+
 app.get('/refreshContactList', (req, res) => {});
 
 app.listen(port, console.log('Listening on localhost:', port));

@@ -9,7 +9,7 @@ class App extends Component {
   }
   getGoogleData() {
     axios
-      .get('/getGoogleData')
+      .get('/appData')
       .catch((err) => {
         console.log(err);
       })

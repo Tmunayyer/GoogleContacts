@@ -45,7 +45,6 @@ helpers.authorize = (res) => {
     access_type: 'offline',
     scope: SCOPES
   });
-  console.log('redirecting to:', authURI);
   res.redirect(authURI);
 };
 
