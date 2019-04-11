@@ -38,8 +38,20 @@ app.get('/googAutherized', (req, res) => {
 });
 
 app.get('/getGoogleData', (req, res) => {
-  google.getData(req.sessionID, (data) => {
-    res.send(data);
+  //pass response incase of failure
+  google.getData(req.sessionID, (err, data) => {
+    if (err) {
+      if (err.errors[0].message === 'Invalid Credentials') {
+        //reauthorize
+        //this is not working for some reason because of cors
+        // i know this is a problem i dont know how to fix it
+        google.authorize(res);
+      } else {
+        return console.log('Error getting google people data:', err);
+      }
+    } else {
+      res.send(data);
+    }
   });
 });
 

@@ -45,6 +45,7 @@ helpers.authorize = (res) => {
     access_type: 'offline',
     scope: SCOPES
   });
+  console.log('redirecting to:', authURI);
   res.redirect(authURI);
 };
 
@@ -63,14 +64,9 @@ helpers.getData = (session, cb) => {
       personFields: 'names,phoneNumbers,emailAddresses'
     };
     people.people.connections.list(params, (err, data) => {
-      if (err) {
-        //and error here means there is something wrong with either
-        // our access code or the user took away our access, either way
-        // we must revalidate.
-        return console.log('Error contacting googleAPI:', err);
-      }
+      if (err) return cb(err, null);
       const myData = data.data.connections;
-      cb(myData);
+      cb(null, myData);
     });
   });
 };

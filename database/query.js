@@ -24,7 +24,7 @@ helpers.saveUser = (googleuser, access_token, session, cb) => {
       //duplicate key, user exists, update session and redirect home
       if (err.code === '23505') {
         queryString = `UPDATE users
-                       SET session = '${session}'
+                       SET session = '${session}', access_token = '${access_token}'
                        WHERE googleuser = '${googleuser}';`;
         client.query(queryString, (err, result) => {
           if (err) return console.log('Error updating user:', err);
