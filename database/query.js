@@ -82,7 +82,8 @@ helpers.getComments = (session, cb) => {
   getUserGoogleId(session, (googleuser) => {
     let queryString = `SELECT id, name, phone_number, email, comment
                        FROM comments
-                       WHERE users_googleuser='${googleuser}';`; //grab comments with id = data
+                       WHERE users_googleuser='${googleuser}'
+                       ORDER BY name ASC;`; //grab comments with id = data
     pg.query(queryString, (err, comments) => {
       if (err) {
         cb(err, null);

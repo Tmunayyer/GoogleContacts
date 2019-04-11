@@ -45,7 +45,6 @@ class App extends Component {
         //good save, lets update state locally
         this.getGoogleData();
       });
-    console.log(id, this.state.comment);
   }
 
   getGoogleData() {
@@ -55,10 +54,9 @@ class App extends Component {
         console.log(err);
       })
       .then(({ data }) => {
-        console.log('state.contacts:', data);
         this.setState({
           contacts: data,
-          edit: '',
+          activeEdit: '',
           comment: ''
         });
       });

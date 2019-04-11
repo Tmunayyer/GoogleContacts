@@ -2,15 +2,16 @@ import React from 'react';
 
 import Contact from './Contact.jsx';
 
-const Feed = ({
-  contacts,
-  edit,
-  comment,
-  handleInputChange,
-  editButtonHandler,
-  saveCommentHandler
-}) => {
-  console.log('from feed', contacts);
+const Feed = (props) => {
+  let {
+    contacts,
+    edit,
+    comment,
+    handleInputChange,
+    editButtonHandler,
+    saveCommentHandler
+  } = props;
+
   return contacts.map((contact) => {
     return (
       <Contact
