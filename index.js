@@ -48,6 +48,7 @@ app.get('/googAutherized', (req, res) => {
       //retrieve google's id for user
       google.getUserInfo(token, (err, { data }) => {
         if (err) {
+          console.log('From /googAutherized');
           console.log('Error getting user info from Google:', err);
           res.status(500);
           res.send('Error code: 500');
@@ -55,6 +56,8 @@ app.get('/googAutherized', (req, res) => {
           //save user to DB
           pg.saveUser(data.id, token.access_token, req.sessionID, (err) => {
             if (err) {
+              console.log('From /googAutherized');
+              console.log('Error saving data to DB', err);
               res.status(500);
               res.send('Error code: 500');
             } else {

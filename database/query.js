@@ -3,11 +3,22 @@ const format = require('pg-format');
 
 let helpers = {};
 
+/* Notes
+
+  While working on this I came across a thread discussing
+  SQL scripting attacks. For this reason we should not use
+  template literals to query the DB. Instead we pass in the
+  values as arguments. This way the query is already set in place
+  and PG will just insert each value.
+
+*/
+
 helpers.hasToken = (session, cb) => {
-  let queryString = `SELECT access_token 
-                     FROM users
-                     WHERE session='${session}';`;
-  pg.query(queryString, (err, result) => {
+  let text = `SELECT access_token 
+              FROM users 
+              WHERE session=($1)`;
+  let values = [session];
+  pg.query(text, values, (err, result) => {
     if (err) {
       cb(err);
     } else {
@@ -21,16 +32,19 @@ helpers.hasToken = (session, cb) => {
 };
 
 helpers.saveUser = (googleuser, access_token, session, cb) => {
-  let queryString = `INSERT INTO users (googleuser, access_token, session)
-                     VALUES ('${googleuser}', '${access_token}', '${session}')`;
-  pg.query(queryString, (err, result) => {
+  let text = `INSERT INTO users (googleuser, access_token, session)
+              VALUES ($1, $2, $3)`;
+  let values = [googleuser, access_token, session];
+
+  pg.query(text, values, (err, result) => {
     if (err) {
       //duplicate key, user exists, update session and redirect home
       if (err.code === '23505') {
-        queryString = `UPDATE users
-                       SET session = '${session}', access_token = '${access_token}'
-                       WHERE googleuser = '${googleuser}';`;
-        pg.query(queryString, (err, result) => {
+        let text = `UPDATE users
+                    SET session=$1 , access_token=$2
+                    WHERE googleuser=$3;`;
+        let values = [session, access_token, googleuser];
+        pg.query(text, values, (err, result) => {
           if (err) {
             cb(err);
           } else {
@@ -42,18 +56,20 @@ helpers.saveUser = (googleuser, access_token, session, cb) => {
         //it is not a duplicate error
         cb(err);
       }
+    } else {
+      //finished saving, redirect
+      cb(null);
     }
-    //finished saving, redirect
-    cb(null);
   });
 };
 
 const getUserGoogleId = (session, cb) => {
-  let queryString = `SELECT googleuser
-                     FROM users
-                     WHERE session='${session}';`;
+  let text = `SELECT googleuser
+              FROM users
+              WHERE session=$1;`;
+  let values = [session];
 
-  pg.query(queryString, (err, data) => {
+  pg.query(text, values, (err, data) => {
     if (err) {
       cb(err);
     } else {
@@ -80,6 +96,8 @@ helpers.saveContacts = (session, googleData, cb) => {
         return [googleuser, displayName, phoneNumber, email];
       });
 
+      // TODO: need to figure this one out, maybe its ok? the only
+      // ones to hit this point is google...
       let queryString = format(
         `INSERT INTO comments (users_googleuser, name, phone_number, email)
          VALUES %L`,
@@ -97,11 +115,12 @@ helpers.getComments = (session, cb) => {
     if (err) {
       cb(err);
     } else {
-      let queryString = `SELECT id, name, phone_number, email, comment
-                       FROM comments
-                       WHERE users_googleuser='${googleuser}'
-                       ORDER BY name ASC;`; //grab comments with id = data
-      pg.query(queryString, (err, comments) => {
+      let text = `SELECT id, name, phone_number, email, comment
+                  FROM comments
+                  WHERE users_googleuser='$1
+                  ORDER BY name ASC;`;
+      let values = [googleuser];
+      pg.query(text, values, (err, comments) => {
         if (err) {
           cb(err, null);
         } else {
@@ -113,10 +132,11 @@ helpers.getComments = (session, cb) => {
 };
 
 helpers.saveComment = (session, data, cb) => {
-  let queryString = `UPDATE comments
-                     SET comment='${data.comment}'
-                     WHERE id='${data.id}';`;
-  pg.query(queryString, (err, result) => {
+  let text = `UPDATE comments
+              SET comment=$1
+              WHERE id=$2;`;
+  let values = [data.comment, data.id];
+  pg.query(text, values, (err, result) => {
     cb(err, result);
   });
 };
