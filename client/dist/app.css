@@ -31,6 +31,7 @@ body {
   margin-top: 8px;
 }
 .logout {
+  font-family: 'Roboto', sans-serif;
   font-size: 24px;
   color: white;
 }
@@ -39,6 +40,7 @@ body {
   cursor: pointer;
 }
 .tagline {
+  font-family: 'Roboto', sans-serif;
   margin-top: 20px;
   margin-bottom: 20px;
 }
@@ -55,25 +57,31 @@ body {
   margin-bottom: 20px;
   min-height: 100px;
   box-shadow: 2px 2px 2px 2px #c4c4c4;
+  border-radius: 10px;
 }
 .left-group {
+  font-family: 'Roboto', sans-serif;
   text-align: left;
   position: absolute;
   top: 10px;
   left: 55px;
 }
 .right-group {
+  font-family: 'Roboto', sans-serif;
   text-align: left;
   position: absolute;
   top: 15px;
   left: 45%;
 }
 .name {
+  font-family: 'Roboto', sans-serif;
   font-size: 24px;
   font-weight: bold;
+  margin-bottom: 10px;
 }
 
 button {
+  font-family: 'Roboto', sans-serif;
   background-color: #66a0fd;
   border: none;
   color: white;
