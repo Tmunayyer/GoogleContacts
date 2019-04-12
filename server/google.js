@@ -68,15 +68,19 @@ helpers.getGoogleContacts = (session, cb) => {
       });
       const params = {
         resourceName: 'people/me',
-        //TODO: implement pagination, only ever getting 100 contacts
-        pageSize: '100',
+        //TODO: this is the max page size
+        // if its possible someone has more (possibly a corporate account)
+        // maybe introduce a pagination in the app?
+        pageSize: '2000',
+        //provide a sync token for late, need to store this in DB
+        requestSyncToken: true,
         personFields: 'names,phoneNumbers,emailAddresses'
       };
       people.people.connections.list(params, (err, data) => {
         if (err) {
           cb(err);
         } else {
-          const myData = data.data.connections;
+          const myData = data.data;
           cb(null, myData);
         }
       });

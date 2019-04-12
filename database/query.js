@@ -83,7 +83,7 @@ helpers.saveContacts = (session, googleData, cb) => {
     if (err) {
       cb(err);
     } else {
-      let values = googleData.map((contact) => {
+      let values = googleData.connections.map((contact) => {
         //check to see if we recieve the information
         let displayName = contact.names ? contact.names[0].displayName : null;
         let phoneNumber = contact.phoneNumbers
@@ -104,7 +104,17 @@ helpers.saveContacts = (session, googleData, cb) => {
         values
       );
       pg.query(queryString, (err, result) => {
-        cb(err, result);
+        if (err) {
+          cb(err);
+        } else {
+          let text = `UPDATE users
+                      SET sync_token=$1
+                      WHERE googleuser=$2`;
+          let values = [googleData.nextSyncToken, googleuser];
+          pg.query(text, values, (err, result) => {
+            cb(err, result);
+          });
+        }
       });
     }
   });
