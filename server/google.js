@@ -26,6 +26,17 @@ let SCOPES = [
   'https://www.googleapis.com/auth/userinfo.email'
 ];
 
+const peopleReqParams = {
+  resourceName: 'people/me',
+  //TODO: this is the max page size
+  // if its possible someone has more (possibly a corporate account)
+  // maybe introduce a pagination in the app?
+  pageSize: '2000',
+  //provide a sync token for late, need to store this in DB
+  requestSyncToken: true,
+  personFields: 'names,phoneNumbers,emailAddresses'
+};
+
 // To be made module.exports
 let helpers = {};
 
@@ -66,17 +77,7 @@ helpers.getGoogleContacts = (session, cb) => {
         version: 'v1',
         auth: oAuth2Client
       });
-      const params = {
-        resourceName: 'people/me',
-        //TODO: this is the max page size
-        // if its possible someone has more (possibly a corporate account)
-        // maybe introduce a pagination in the app?
-        pageSize: '2000',
-        //provide a sync token for late, need to store this in DB
-        requestSyncToken: true,
-        personFields: 'names,phoneNumbers,emailAddresses'
-      };
-      people.people.connections.list(params, (err, data) => {
+      people.people.connections.list(peopleReqParams, (err, data) => {
         if (err) {
           cb(err);
         } else {
@@ -85,6 +86,55 @@ helpers.getGoogleContacts = (session, cb) => {
         }
       });
     }
+  });
+};
+
+helpers.getSyncContacts = (session, cb) => {
+  //grab necessary toekn fromm db
+  pg.hasToken(session, (err, tokens) => {
+    let access_token = { access_token: tokens.access_token };
+    let sync_token = tokens.sync_token;
+
+    let oAuth2Client = makeOAuth2Client();
+    oAuth2Client.setCredentials(access_token);
+    const people = google.people({
+      version: 'v1',
+      auth: oAuth2Client
+    });
+    //append property syncToken
+    peopleReqParams.syncToken = sync_token;
+    //google request
+    people.people.connections.list(peopleReqParams, (err, data) => {
+      //remove property syncToken
+      delete peopleReqParams.syncToken;
+
+      if (err) {
+        cb(err);
+      } else {
+        const myData = data.data;
+
+        pg.saveContacts(session, myData, cb);
+
+        // if (myData.connections === undefined) {
+        //   console.log('no new contacts');
+        //   helpers.saveContacts(session, myData)
+        //   //just save sync token
+        //   //i dont have the google user
+        //   // helpers.saveSyncToken(
+        //   //   data.nextSyncToken,
+        //   //   googleuser,
+        //   //   (err, result) => {
+        //   //     cb(err, result);
+        //   //   }
+        //   // );
+        // } else {
+        //   //save contacts with myData
+        //   pg.saveContacts(session, myData, (err, result) => {
+        //     cb(err, result);
+        //   });
+        // }
+      }
+    });
   });
 };
 

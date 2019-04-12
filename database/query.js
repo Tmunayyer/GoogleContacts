@@ -3,18 +3,8 @@ const format = require('pg-format');
 
 let helpers = {};
 
-/* Notes
-
-  While working on this I came across a thread discussing
-  SQL scripting attacks. For this reason we should not use
-  template literals to query the DB. Instead we pass in the
-  values as arguments. This way the query is already set in place
-  and PG will just insert each value.
-
-*/
-
 helpers.hasToken = (session, cb) => {
-  let text = `SELECT access_token 
+  let text = `SELECT access_token, sync_token 
               FROM users 
               WHERE session=($1)`;
   let values = [session];
@@ -78,53 +68,85 @@ const getUserGoogleId = (session, cb) => {
   });
 };
 
+const saveSyncToken = (token, googleuser, cb) => {
+  console.log('the sync token:', token);
+  let text = `UPDATE users
+                      SET sync_token=$1
+                      WHERE googleuser=$2`;
+  let values = [token, googleuser];
+  pg.query(text, values, (err, result) => {
+    //fin
+    cb(err, result);
+  });
+};
+
+const formatContactData = (googleuser, googleData) => {
+  // console.log('syncRequest data:', googleData.data.connections);
+  return googleData.connections.map((contact) => {
+    //check to see if we recieve the information
+    let displayName = contact.names ? contact.names[0].displayName : null;
+    let phoneNumber = contact.phoneNumbers
+      ? contact.phoneNumbers[0].value
+      : null;
+    let email = contact.emailAddresses ? contact.emailAddresses[0].value : null;
+
+    return [googleuser, displayName, phoneNumber, email];
+  });
+};
+
 helpers.saveContacts = (session, googleData, cb) => {
+  //grab user id from db
+  console.log('Format for save contacts:', googleData);
   getUserGoogleId(session, (err, googleuser) => {
     if (err) {
       cb(err);
     } else {
-      let values = googleData.connections.map((contact) => {
-        //check to see if we recieve the information
-        let displayName = contact.names ? contact.names[0].displayName : null;
-        let phoneNumber = contact.phoneNumbers
-          ? contact.phoneNumbers[0].value
-          : null;
-        let email = contact.emailAddresses
-          ? contact.emailAddresses[0].value
-          : null;
-
-        return [googleuser, displayName, phoneNumber, email];
-      });
-
-      // TODO: need to figure this one out, maybe its ok? the only
-      // ones to hit this point is google...
-      let queryString = format(
-        `INSERT INTO comments (users_googleuser, name, phone_number, email)
-         VALUES %L`,
-        values
-      );
-      pg.query(queryString, (err, result) => {
+      let token = googleData.nextSyncToken;
+      saveSyncToken(token, googleuser, (err, result) => {
         if (err) {
           cb(err);
-        } else {
-          let text = `UPDATE users
-                      SET sync_token=$1
-                      WHERE googleuser=$2`;
-          let values = [googleData.nextSyncToken, googleuser];
-          pg.query(text, values, (err, result) => {
-            cb(err, result);
+        } else if (googleData.connections !== undefined) {
+          let values = formatContactData(googleuser, googleData);
+          let queryString = format(
+            `INSERT INTO comments (users_googleuser, name, phone_number, email)
+             VALUES %L`,
+            values
+          );
+
+          pg.query(queryString, (err, result) => {
+            if (err) {
+              cb(err);
+            } else {
+              cb(null, result);
+            }
           });
         }
       });
+      /* Notes:
+
+        The pg-format package will take an array of arrays and format
+        this query into a single string. Normally we dont want strings
+        so we can prevent sql scripting attacks however, this query
+        only occurs with google data. No user input is passed through here.
+        For this reason well stick with using string format.
+
+        Another option if we needed to parameterize would be to make
+        multiple queries using a loop and async await.
+
+      */
     }
   });
 };
 
+helpers.syncContacts = (googleuser, data, cb) => {};
+
 helpers.getComments = (session, cb) => {
+  //grab users google id
   getUserGoogleId(session, (err, googleuser) => {
     if (err) {
       cb(err);
     } else {
+      //retrieve comments made by user_googleuser
       let text = `SELECT id, name, phone_number, email, comment
                   FROM comments
                   WHERE users_googleuser=$1

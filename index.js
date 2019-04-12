@@ -106,8 +106,18 @@ app.get('/contacts', (req, res) => {
 
 //responds to a button on the page to refresh contacts list
 app.get('/syncContacts', (req, res) => {
-  console.log('request to refresh contacts');
-  res.send('synced');
+  //call google sync contacts
+  google.getSyncContacts(req.sessionID, (err, data) => {
+    if (err) {
+      console.log('Error syncing contacts with google:', err);
+      res.status(500);
+      res.send('Error code: 500');
+    } else {
+      console.log('from index', data);
+      res.send(data);
+    }
+  });
+  //send back all contacts to re-render
 });
 
 //save comment in the DB to a contact
