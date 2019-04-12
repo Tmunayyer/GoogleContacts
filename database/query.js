@@ -117,7 +117,7 @@ helpers.getComments = (session, cb) => {
     } else {
       let text = `SELECT id, name, phone_number, email, comment
                   FROM comments
-                  WHERE users_googleuser='$1
+                  WHERE users_googleuser=$1
                   ORDER BY name ASC;`;
       let values = [googleuser];
       pg.query(text, values, (err, comments) => {

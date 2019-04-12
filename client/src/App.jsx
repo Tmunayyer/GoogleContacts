@@ -14,6 +14,7 @@ class App extends Component {
       activeEdit: '',
       comment: ''
     };
+    this.getGoogleData = this.getGoogleData.bind(this);
     this.editButtonClickHandler = this.editButtonClickHandler.bind(this);
     this.saveCommentHandler = this.saveCommentHandler.bind(this);
     this.handleInputChange = this.handleInputChange.bind(this);
@@ -62,7 +63,7 @@ class App extends Component {
         });
       });
   }
-  componentWillMount() {
+  componentDidMount() {
     this.getGoogleData();
   }
   render() {
