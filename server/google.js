@@ -14,6 +14,7 @@ const pg = require('../database/query.js');
 */
 
 // Using readFileSync to ensure this is finished before server starts.
+// In production Ill need a real secrete management system.
 let CREDENTIALS = JSON.parse(fs.readFileSync('./server/credentials.json'));
 let SCOPES = [
   'https://www.googleapis.com/auth/contacts.readonly',
@@ -34,52 +35,63 @@ const makeOAuth2Client = () => {
 helpers.generateToken = (code, cb) => {
   let oAuth2Client = makeOAuth2Client();
   oAuth2Client.getToken(code, (err, token) => {
-    if (err) return console.log('Error generating token:', err);
-    cb(token);
+    cb(err, token);
   });
 };
 
-helpers.authorize = (res) => {
+helpers.getAuthURI = (cb) => {
   let oAuth2Client = makeOAuth2Client();
   const authURI = oAuth2Client.generateAuthUrl({
     access_type: 'offline',
     scope: SCOPES
   });
-  res.redirect(authURI);
+  cb(authURI);
 };
 
-helpers.getData = (session, cb) => {
+helpers.getGoogleContacts = (session, cb) => {
   let oAuth2Client = makeOAuth2Client();
 
-  pg.hasToken(session, (token) => {
-    oAuth2Client.setCredentials(token);
-    const people = google.people({
-      version: 'v1',
-      auth: oAuth2Client
-    });
-    const params = {
-      resourceName: 'people/me',
-      pageSize: '100',
-      personFields: 'names,phoneNumbers,emailAddresses'
-    };
-    people.people.connections.list(params, (err, data) => {
-      if (err) return cb(err, null);
-      const myData = data.data.connections;
-      cb(null, myData);
-    });
+  pg.hasToken(session, (err, token) => {
+    if (err) {
+      console.log('Error getting token inside getGoogleContacts', err);
+      cb(err);
+    } else {
+      oAuth2Client.setCredentials(token);
+      const people = google.people({
+        version: 'v1',
+        auth: oAuth2Client
+      });
+      const params = {
+        resourceName: 'people/me',
+        //TODO: implement pagination, only ever getting 100 contacts
+        pageSize: '100',
+        personFields: 'names,phoneNumbers,emailAddresses'
+      };
+      people.people.connections.list(params, (err, data) => {
+        if (err) {
+          cb(err);
+        } else {
+          const myData = data.data.connections;
+          cb(null, myData);
+        }
+      });
+    }
   });
 };
 
 helpers.getUserInfo = (token, cb) => {
   let oAuth2Client = makeOAuth2Client();
   oAuth2Client.setCredentials(token);
-  let something = google.oauth2({
+  let withAuth = google.oauth2({
     auth: oAuth2Client,
     version: 'v2'
   });
-  something.userinfo.v2.me.get((err, res) => {
-    if (err) return console.log(err);
-    cb(res);
+  withAuth.userinfo.v2.me.get((err, data) => {
+    if (err) {
+      cb(err, data);
+    } else {
+      cb(null, data);
+    }
   });
 };
 
