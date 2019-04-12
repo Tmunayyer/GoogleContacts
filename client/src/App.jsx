@@ -58,11 +58,15 @@ class App extends Component {
     });
   }
   syncClickHandler() {
-    helpers.syncContacts((err, data) => {
+    helpers.syncContacts((err, { data }) => {
       if (err) {
         console.log('error syncing contacts');
       } else {
-        console.log('updated contacts', data);
+        if (data.didSync) {
+          this.getData();
+        } else {
+          // no new contacts!
+        }
       }
     });
   }

@@ -113,11 +113,10 @@ app.get('/syncContacts', (req, res) => {
       res.status(500);
       res.send('Error code: 500');
     } else {
-      console.log('from index', data);
-      res.send(data);
+      //data will be a boolean
+      res.send({ didSync: data });
     }
   });
-  //send back all contacts to re-render
 });
 
 //save comment in the DB to a contact

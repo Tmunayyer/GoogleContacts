@@ -96,7 +96,6 @@ const formatContactData = (googleuser, googleData) => {
 
 helpers.saveContacts = (session, googleData, cb) => {
   //grab user id from db
-  console.log('Format for save contacts:', googleData);
   getUserGoogleId(session, (err, googleuser) => {
     if (err) {
       cb(err);
@@ -112,14 +111,17 @@ helpers.saveContacts = (session, googleData, cb) => {
              VALUES %L`,
             values
           );
-
           pg.query(queryString, (err, result) => {
             if (err) {
               cb(err);
             } else {
-              cb(null, result);
+              //pass true to declare new contacts
+              cb(null, true);
             }
           });
+        } else {
+          //pass false to declare no new contacts
+          cb(null, false);
         }
       });
       /* Notes:
