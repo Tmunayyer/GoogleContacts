@@ -112,27 +112,7 @@ helpers.getSyncContacts = (session, cb) => {
         cb(err);
       } else {
         const myData = data.data;
-
         pg.saveContacts(session, myData, cb);
-
-        // if (myData.connections === undefined) {
-        //   console.log('no new contacts');
-        //   helpers.saveContacts(session, myData)
-        //   //just save sync token
-        //   //i dont have the google user
-        //   // helpers.saveSyncToken(
-        //   //   data.nextSyncToken,
-        //   //   googleuser,
-        //   //   (err, result) => {
-        //   //     cb(err, result);
-        //   //   }
-        //   // );
-        // } else {
-        //   //save contacts with myData
-        //   pg.saveContacts(session, myData, (err, result) => {
-        //     cb(err, result);
-        //   });
-        // }
       }
     });
   });

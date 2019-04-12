@@ -1,6 +1,17 @@
 const pg = require('./index.js');
 const format = require('pg-format');
 
+/* Notes:
+
+  The pg-format package will take an array of arrays and format
+  this query into a single string. Normally we dont want strings
+  so we can prevent sql scripting attacks however, the query to save
+  contacts will only ever be triggered by a request from google.
+
+  We could also just make multiple queries.
+
+*/
+
 let helpers = {};
 
 helpers.hasToken = (session, cb) => {
@@ -69,7 +80,6 @@ const getUserGoogleId = (session, cb) => {
 };
 
 const saveSyncToken = (token, googleuser, cb) => {
-  console.log('the sync token:', token);
   let text = `UPDATE users
                       SET sync_token=$1
                       WHERE googleuser=$2`;
@@ -124,23 +134,9 @@ helpers.saveContacts = (session, googleData, cb) => {
           cb(null, false);
         }
       });
-      /* Notes:
-
-        The pg-format package will take an array of arrays and format
-        this query into a single string. Normally we dont want strings
-        so we can prevent sql scripting attacks however, this query
-        only occurs with google data. No user input is passed through here.
-        For this reason well stick with using string format.
-
-        Another option if we needed to parameterize would be to make
-        multiple queries using a loop and async await.
-
-      */
     }
   });
 };
-
-helpers.syncContacts = (googleuser, data, cb) => {};
 
 helpers.getComments = (session, cb) => {
   //grab users google id
