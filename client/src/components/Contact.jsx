@@ -11,39 +11,37 @@ const Contact = (props) => {
   } = props;
   let { id, name, phone_number, email, comment } = data;
 
-  const conRender = () => {
-    let jsx;
-    if (id === edit) {
-      jsx = (
-        <>
-          <textarea
-            cols="50"
-            rows="2"
-            type="text"
-            value={editComment}
-            maxLength="100"
-            onChange={handleInputChange}
-          />
-          <div>
-            <button onClick={(e) => saveCommentHandler(e, id)}>
-              Save Comment
-            </button>
-          </div>
-        </>
-      );
-    } else {
-      jsx = (
-        <>
-          <div className="comment">{comment}</div>
-          <div>
-            <button onClick={(e) => editButtonHandler(e, id, comment)}>
-              Edit
-            </button>
-          </div>
-        </>
-      );
-    }
-    return jsx;
+  const renderTextArea = () => {
+    return (
+      <>
+        <textarea
+          cols="50"
+          rows="2"
+          type="text"
+          value={editComment}
+          maxLength="100"
+          onChange={handleInputChange}
+        />
+        <div>
+          <button onClick={(e) => saveCommentHandler(e, id)}>
+            Save Comment
+          </button>
+        </div>
+      </>
+    );
+  };
+
+  const renderEditButton = () => {
+    return (
+      <>
+        <div className="comment">{comment}</div>
+        <div>
+          <button onClick={(e) => editButtonHandler(e, id, comment)}>
+            Edit
+          </button>
+        </div>
+      </>
+    );
   };
 
   return (
@@ -58,8 +56,7 @@ const Contact = (props) => {
       <div className="right-group">
         <div className="comment">
           <div>Notes:</div>
-
-          {conRender()}
+          {edit === id ? renderTextArea() : renderEditButton()}
         </div>
       </div>
     </div>
