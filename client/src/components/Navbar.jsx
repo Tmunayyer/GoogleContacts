@@ -1,11 +1,13 @@
 import React from 'react';
 
-const Navbar = (props) => {
+const Navbar = ({ syncClickHandler }) => {
   return (
     <div className="navbar">
       <h2 className="navbar-item title">Comtacts</h2>
       <div className="navbar-item logout-button">
-        <button className="logout">Logout</button>
+        <button className="logout" onClick={syncClickHandler}>
+          Sync Contacts
+        </button>
       </div>
     </div>
   );

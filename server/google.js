@@ -11,6 +11,11 @@ const pg = require('../database/query.js');
     Most of what I got from google's quickstart has been tweaked heavily
     to fit my needs.
 
+
+  When we retrieve the access tokens it would be a good idea to handle
+  the refresh tokens. The google docs explain this but is not important
+  for this project.
+  
 */
 
 // Using readFileSync to ensure this is finished before server starts.

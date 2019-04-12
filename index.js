@@ -105,10 +105,10 @@ app.get('/contacts', (req, res) => {
 });
 
 //responds to a button on the page to refresh contacts list
-app.get('/refreshContactList', (req, res) => {});
-
-//responds to button log the user out, remove authorization code from db
-app.get('/logout', (req, res) => {});
+app.get('/syncContacts', (req, res) => {
+  console.log('request to refresh contacts');
+  res.send('synced');
+});
 
 //save comment in the DB to a contact
 app.post('/contacts', (req, res) => {
