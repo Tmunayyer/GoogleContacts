@@ -65,7 +65,7 @@ class App extends Component {
         if (data.didSync) {
           this.getData();
         } else {
-          // no new contacts!
+          alert('No new contacts!');
         }
       }
     });
