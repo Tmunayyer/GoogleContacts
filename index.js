@@ -92,7 +92,7 @@ app.get('/contacts', (req, res) => {
               res.status(500);
               res.send('Error code: 500');
             } else {
-              res.redirect('/appData');
+              res.redirect('/contacts');
             }
           });
         });
