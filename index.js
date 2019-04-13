@@ -85,7 +85,6 @@ app.get('/contacts', (req, res) => {
         google.getGoogleContacts(req.sessionID, (err, googleData) => {
           if (err) return console.log('problem getting data from google:', err);
           //save contact to the DB
-          console.log(googleData);
           pg.saveContacts(req.sessionID, googleData, (err, result) => {
             //restart this process with saved contacts
             if (err) {
