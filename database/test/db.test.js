@@ -1,5 +1,5 @@
-const pg = require('./index.js');
-const dbHelpers = require('./query.js');
+const pg = require('../index.js');
+const dbHelpers = require('../query.js');
 
 const testUtil = require('./testHelpers.js');
 
