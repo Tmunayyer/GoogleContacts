@@ -261,4 +261,15 @@ describe('Test saving and retrieving comments', () => {
       }
     });
   });
+
+  test('Shoudl be able to retrieve comments:', (done) => {
+    dbHelpers.getComments(session, (err, result) => {
+      if (err) {
+        console.log('Error getting comments from db:', err);
+      } else {
+        expect(result[1].comment).toBe(testUtil.mockCliData.comment);
+      }
+      done();
+    });
+  });
 });
