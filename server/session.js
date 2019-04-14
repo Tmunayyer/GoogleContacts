@@ -2,15 +2,11 @@ const session = require('express-session');
 const uuid = require('uuid/v4');
 const pgSession = require('connect-pg-simple')(session);
 
-const env = process.env.ENVIRONMENT;
+const NODE_ENV = process.env.NODE_ENV;
+const SECRET = process.env.SECRET;
 
 //tell pgSession where to connect
-const pgConObj = {
-  host: 'localhost',
-  //comtacts is name of app, not a typo
-  database: 'comtacts',
-  port: 5432
-};
+const pgConObj = require('../database/index.js').connectObj;
 
 //middlewear that will provide session/cookies
 const getSession = (req, res, next) => {
@@ -22,7 +18,7 @@ const getSession = (req, res, next) => {
     //use pg as session store
     store: new pgSession({ conObject: pgConObj }),
     //sign the cookie with this secret
-    secret: env === 'production' ? process.env.SECRET : 'BladeRunner',
+    secret: NODE_ENV === 'PROD' ? SECRET : 'BladeRunner',
     //resave = true means we will save cookie if cookie comes back unaltered
     // this is a problem if a client makes parallel requests
     // possibly causing one session to overwright the other.
