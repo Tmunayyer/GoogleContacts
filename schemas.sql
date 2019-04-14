@@ -1,5 +1,4 @@
-Schema:
-=====================================
+
 CREATE TABLE "session" (
   "sid" varchar NOT NULL COLLATE "default",
 	"sess" json NOT NULL,
@@ -25,4 +24,3 @@ CREATE TABLE "comments" (
   "email" varchar(25),
   "comment" varchar(100)
 );
-=====================================

@@ -4,12 +4,65 @@ Coding Challange
 
 ## Contents
 
+- [The Application](#the-application)
 - [The Problem](#the-problem)
 - [Focus](#focus)
 - [Technologies Used](#technologies-used)
 - [Other Projects](#other-projects)
 - [Resume Link](#resume-link)
 - [Live Demo](#live-demo)
+
+## The Application
+
+Try the application out [here](ec2-18-216-92-85.us-east-2.compute.amazonaws.com) or you can set it up locally with the following instructions.
+
+### Local Setup
+
+1. Install [PostgreSQL](https://www.postgresql.org/).
+2. Install [Node.js](https://nodejs.org/en/).
+3. Retrieve credentials for [Google's API](https://console.developers.google.com).
+4. Clone this repository.
+
+```
+$ git clone https://github.com/Tmunayyer/GoogleContacts.git
+```
+
+5. Place credentials.json into the server file. Ensure credentials.json is gitignored.
+
+6. Create PostgreSQL database "comtacts".
+
+```
+$ sudo -u postgres createdb comtacts
+```
+
+7. Set up PostgreSQL tables, run command in the terminal from root of the repository.
+
+```
+$ psql comtacts < schemas.sql
+```
+
+8. Install dependencies.
+
+```
+$ npm install
+```
+
+9. Start the service.
+
+```
+npm start
+```
+
+10. Visit localhost:4000
+
+## Testing
+
+1. Ensure PostgreSQL is properly set up with the database and tables.
+2. Run npm test
+
+```
+npm run test
+```
 
 ## The Problem
 
@@ -39,17 +92,11 @@ Two other factors that heavily influenced my decision were my own familiarity wi
 
 #### What I Built
 
-I built out a single page application that was able to render the list of contacts. Within each contact subsection the user was able to click and edit button and edit a comment for a given contact.
+I built out a single page application that was able to render the list of contacts. Within each contact subsection the user was able to click an edit button and type a comment for a given contact.
 
-I also built a sync button that would allow a user to sync their contact list with the Google Contacts application. There were a few reasons this was a feature I chose to focus on.
+I also built a sync button that would allow a user to sync their contact list manually with the Google Contacts application. This was mostly for convenience for the user's sake. If they are adding contacts and commenting on them, they can manually request a sync without having to leave the page or waiting for any type of lazy check implementation of the application. In an ideal world the application would sync on a page visit as well as have the manual sync.
 
-_Efficiency_: Upon an initial sign up to my application, a user’s contacts are uploaded into my database. This allows me to limit the number of API calls to Google. Additionally it helps in the occurrence that a user has created new contacts in Google’s application. Instead of fetching all contacts and filtering out ones I already have, I let Google do the heavy lifting and request a synchronization to get only new data from my last get request.
-
-_Convenience_: Without a way to sync the application while logged in, a user would have to log out and log back in to trigger a get request to Google’s API. There is also the scenario where I reach out to google every so often but there are rate limits that must be heeded.
-
-With these two features implemented, it is easy to get started. Simply sign in and see your contacts. If there are contacts that arent shown, just click the button. Without easy access to your contacts then this application would be useless.
-
-_Whats Next_: The next thing I would implement on this project would most likely be a search bar to make it easier to find a specific contact. After which maybe a more cohesive login/logout functionality.
+_Whats Next_: The next thing I would implement on this project would most likely be a search bar to make it easier to find a specific contact. After that, maybe a more cohesive login/logout functionality.
 
 ### Server (Node, Express)
 
