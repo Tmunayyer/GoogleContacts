@@ -15,58 +15,63 @@ app.use(express.static('client/dist'));
 app.use(bodyParser.json());
 app.use(getSession());
 
+const handleInternalServerError = (res) => {
+  res.status(500);
+  res.send('Error code: 500');
+};
+
 //homepage
 app.get('/', (req, res) => {
   //if we have this user in the db
   pg.hasToken(req.sessionID, (err, token) => {
     if (err) {
       console.log('Error retrieving token from DB:', err);
-      res.status(500);
-      res.send('Error code: 500');
-    } else if (token) {
+      return handleInternalServerError(res);
+    }
+
+    if (token) {
       //send them application
       res.sendFile(__dirname + '/client/dist/app.html');
-    } else {
-      //send them to google to be authorized
-      google.getAuthURI((authURI) => {
-        res.redirect(authURI);
-      });
+      return;
     }
+
+    //send them to google to be authorized
+    google.getAuthURI((authURI) => {
+      res.redirect(authURI);
+    });
   });
 });
 
 //recieve google's redirect
 app.get('/googAutherized', (req, res) => {
   const { code } = req.query;
+
   //generate a token
   google.generateToken(code, (err, token) => {
     if (err) {
       console.log('Error generating a token:', err);
-      res.status(500);
-      res.send('Error code: 500');
-    } else {
-      //retrieve google's id for user
-      google.getUserInfo(token, (err, { data }) => {
+      return handleInternalServerError(res);
+    }
+
+    //retrieve google's id for user
+    google.getUserInfo(token, (err, { data }) => {
+      if (err) {
+        console.log('From /googAutherized');
+        console.log('Error getting user info from Google:', err);
+        return handleInternalServerError(res);
+      }
+
+      //save user to DB
+      pg.saveUser(data.id, token.access_token, req.sessionID, (err) => {
         if (err) {
           console.log('From /googAutherized');
-          console.log('Error getting user info from Google:', err);
-          res.status(500);
-          res.send('Error code: 500');
-        } else {
-          //save user to DB
-          pg.saveUser(data.id, token.access_token, req.sessionID, (err) => {
-            if (err) {
-              console.log('From /googAutherized');
-              console.log('Error saving data to DB', err);
-              res.status(500);
-              res.send('Error code: 500');
-            } else {
-              res.redirect('/');
-            }
-          });
+          console.log('Error saving data to DB', err);
+          return handleInternalServerError(res);
         }
+
+        res.redirect('/');
       });
-    }
+    });
   });
 });
 
@@ -75,31 +80,32 @@ app.get('/contacts', (req, res) => {
   //does the user have contacts in the DB?
   pg.getComments(req.sessionID, (err, data) => {
     if (err) {
-      res.status(500);
-      res.send('Error code: 500');
       console.log('Error getting comments:', err);
-    } else {
-      //if we do not have ANY data in DB
-      if (data.length === 0) {
-        //get the data from the contacts
-        google.getGoogleContacts(req.sessionID, (err, googleData) => {
-          if (err) return console.log('problem getting data from google:', err);
-          //save contact to the DB
-          pg.saveContacts(req.sessionID, googleData, (err, result) => {
-            //restart this process with saved contacts
-            if (err) {
-              console.log('Error saving contacts:', err);
-              res.status(500);
-              res.send('Error code: 500');
-            } else {
-              res.redirect('/contacts');
-            }
-          });
+      return handleInternalServerError(res);
+    }
+
+    if (data.length === 0) {
+      //get the data from the contacts
+      google.getGoogleContacts(req.sessionID, (err, googleData) => {
+        if (err) {
+          console.log('Problem getting data from google:', err);
+          return handleInternalServerError(res);
+        }
+
+        //save contact to the DB
+        pg.saveContacts(req.sessionID, googleData, (err, result) => {
+          if (err) {
+            console.log('Error saving contacts:', err);
+            return handleInternalServerError(res);
+          }
+
+          //restart this process with saved contacts
+          res.redirect('/contacts');
         });
-      } else {
-        //send down saved contacts
-        res.send(data);
-      }
+      });
+    } else {
+      //send down saved contacts
+      res.send(data);
     }
   });
 });
@@ -110,12 +116,11 @@ app.get('/syncContacts', (req, res) => {
   google.getSyncContacts(req.sessionID, (err, data) => {
     if (err) {
       console.log('Error syncing contacts with google:', err);
-      res.status(500);
-      res.send('Error code: 500');
-    } else {
-      //data will be a boolean
-      res.send({ didSync: data });
+      return handleInternalServerError(res);
     }
+
+    //data will be a boolean
+    res.send({ didSync: data });
   });
 });
 
@@ -124,11 +129,11 @@ app.post('/contacts', (req, res) => {
   let data = req.body.data;
   pg.saveComment(res.sessionID, data, (err, result) => {
     if (err) {
-      res.send('We made a mistake!');
       console.log('Mistake saving to contacts:', err);
-    } else {
-      res.send('Saved!');
+      return handleInternalServerError(res);
     }
+
+    res.send('Saved!');
   });
 });
 
