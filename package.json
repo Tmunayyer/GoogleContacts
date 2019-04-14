@@ -13,19 +13,26 @@
     "pg-format": "^1.0.4",
     "react": "^16.8.6",
     "react-dom": "^16.8.6",
-    "uuid": "^3.3.2"
+    "uuid": "^3.3.2",
+    "webpack": "^4.29.6",
+    "webpack-cli": "^3.3.0"
   },
   "devDependencies": {
     "@babel/core": "^7.4.3",
     "@babel/preset-env": "^7.4.3",
     "@babel/preset-react": "^7.0.0",
+    "babel-jest": "^24.7.1",
     "babel-loader": "^8.0.5",
+    "enzyme": "^3.9.0",
+    "enzyme-adapter-react-16": "^1.12.1",
     "jest": "^24.7.1",
-    "webpack": "^4.29.6"
+    "react-test-renderer": "^16.8.6"
   },
   "scripts": {
     "test": "jest --detectOpenHandles",
-    "dev": "nodemon index.js"
+    "dev": "nodemon index.js",
+    "prestart": "webpack -p",
+    "start": "node index.js"
   },
   "repository": {
     "type": "git",
@@ -37,5 +44,13 @@
   "bugs": {
     "url": "https://github.com/Tmunayyer/GoogleContacts/issues"
   },
-  "homepage": "https://github.com/Tmunayyer/GoogleContacts#readme"
+  "homepage": "https://github.com/Tmunayyer/GoogleContacts#readme",
+  "jest": {
+    "moduleNameMapper": {
+      "^.+\\.scss$": "<rootDir>/scripts/mocks/style-mock.js"
+    },
+    "setupFilesAfterEnv": [
+      "<rootDir>/client/test/setupTest.js"
+    ]
+  }
 }

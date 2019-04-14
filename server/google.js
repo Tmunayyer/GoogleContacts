@@ -3,6 +3,12 @@ const fs = require('fs');
 
 const pg = require('../database/query.js');
 
+const NODE_ENV = process.env.NODE_ENV;
+let CRED_FP = process.env.CRED_FP;
+
+if (NODE_ENV !== 'PROD') {
+  CRED_FP = './server/credentials.json';
+}
 /* NOTES
 
   oAuth was completely new to me.
@@ -20,7 +26,8 @@ const pg = require('../database/query.js');
 
 // Using readFileSync to ensure this is finished before server starts.
 // In production Ill need a real secrete management system.
-let CREDENTIALS = JSON.parse(fs.readFileSync('./server/credentials.json'));
+
+let CREDENTIALS = JSON.parse(fs.readFileSync(CRED_FP));
 let SCOPES = [
   'https://www.googleapis.com/auth/contacts.readonly',
   'https://www.googleapis.com/auth/userinfo.email'

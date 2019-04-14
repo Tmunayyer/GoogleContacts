@@ -62,6 +62,10 @@ typings/
 
 # google
 credentials.json
+prodCredentials.json
 
 # bundle
 bundle.js
+
+#Docker
+Dockerfile
