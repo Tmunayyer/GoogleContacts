@@ -1,11 +1,9 @@
 import React from 'react';
 import App from '../src/App.jsx';
 import Navbar from '../src/components/Navbar.jsx';
-import Feed from '../src/components/Feed.jsx';
 import Contact from '../src/components/Contact.jsx';
 
 import { mount, shallow, render } from 'enzyme';
-import { testing } from 'googleapis/build/src/apis/testing';
 
 /*
     This is my first time writing tests for React. I am following

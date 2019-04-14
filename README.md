@@ -64,6 +64,8 @@ npm start
 npm test
 ```
 
+Note: Missing here is an integration test to check end to end that everything works. This would be a next step.
+
 ## The Problem
 
 Use the Google Contacts API to build an application that enables a user to write comments for a given contact. Please include authentication and a persistent data storage.
@@ -75,6 +77,8 @@ Please design, test, document, and deploy the code.
 This is a full stack application. I intended at the start to give equal time to both the front and back end of the application. In the end it was 70/30 back/front.
 
 This was primarily due to being unfamiliar with Open Authentication and the Google API. Learning this was not too hard but weaving the flow of authentication into the server required extra attention compared to my experiences in the past.
+
+The application is Dockerized and deployed on an EC2 instance.
 
 ## Technologies Used
 
@@ -100,7 +104,7 @@ _Whats Next_: The next thing I would implement on this project would most likely
 
 ### Server (Node, Express)
 
-The server is a typical express server with a few extra modules. The first of which would be express-sessions.
+The server is a typical express server with a few extra modules. This was my first time using epress-sessions in an application.
 
 _Express-sessions_: This package allows for an easy management of cookies. It is a middleware that will automatically attach a cookie, save it (the session ID) to the store (PostgreSQL), and provide a few additional properties to each request.
 
@@ -110,9 +114,9 @@ _Connect-pg-simple_: This package provides an easily managed store for the sessi
 
 #### What I Built
 
-A RESTful API that would use postgres and googleapi to validate users, retrieve information, and store information.
+A RESTful API that would use postgres and googleapi to validate users, retrieve information, and store information. Most of this API is handling data retrieval from either Google or my database.
 
-<!-- Express-session made it easy to identify who is a returning user and who is not. Upon an initial request this would be crucial as it would determine if the user needs to be authorized or not. If they need to be authorized I can redirect them appropriately. If not I can just return their contact data. The session ID continued to be a key identifier upon each request. -->
+_Whats Next_: Currently I am storing the session ID in the users table. This should be refactored to have a unique user ID independent of the session ID stored on the session itself. Another issue is paginating the Google API response to handle the event in which a user has more than the maximum retrieval limit.
 
 ### Database (PostgreSQL)
 
@@ -124,8 +128,16 @@ No ORM is being used. The queries for this application are somewhat simple. Cont
 
 #### Security
 
-Because this simple application is able to get some sensitive information DB security is an issue. For my deployed service I confgiured PostgreSQL to only allow connection from local Docker images. Additionally I use a environment variable set at the build of the image for the DB password.
+Because this simple application is able to get some sensitive information, DB security is an issue. For my deployed service I confgiured PostgreSQL to only allow connection from local Docker images. Additionally I use a environment variable set at the build of the image for the DB password.
+
+_Whats next_: The next thing I would work on for the database is possibly an off site backup. User's comments and persistence are the selling feature of the application.
 
 ## Other Projects
 
+My [Back End Thesis](https://github.com/Tmunayyer/Listing-Details-Sidebar) while at Hack Reactor displays my ability to architect and scale the backend of a service.
+
+[PropogandaBonanza](https://github.com/Tmunayyer/propogandaBonanza) was a 36-hour MVP challenge using two APIs and a focus on functionality over style.
+
 ## Resume Link
+
+[Resume](https://drive.google.com/file/d/1oKEIO_sYNlVbdhj42BXKSp0OlJ2tHf0a/view?usp=sharing)
