@@ -1,6 +1,4 @@
-# GoogleContacts
-
-Coding Challange
+# Comtacts
 
 ## Contents
 
@@ -9,8 +7,7 @@ Coding Challange
 - [Focus](#focus)
 - [Technologies Used](#technologies-used)
 - [Other Projects](#other-projects)
-- [Resume Link](#resume-link)
-- [Live Demo](#live-demo)
+- [Resume Link](https://drive.google.com/file/d/1oKEIO_sYNlVbdhj42BXKSp0OlJ2tHf0a/view?usp=sharing)
 
 ## The Application
 
@@ -82,11 +79,11 @@ The application is Dockerized and deployed on an EC2 instance.
 
 ## Technologies Used
 
-Contents
+### Contents
 
-- [Client](<#client-(react)>) (React)
-- [Server](<#server-(node,-express)>) (Node, Express)
-- [Database](<#database-(postgresql)>) (PostgreSQL)
+- [Client (React)](<#client-(react)>)
+- [Server (Node, Express)](<#server-(node,-express)>)
+- [Database (PostgreSQL)](<#database-(postgresql)>)
 
 ### Client (React)
 
@@ -116,7 +113,7 @@ _Connect-pg-simple_: This package provides an easily managed store for the sessi
 
 A RESTful API that would use postgres and googleapi to validate users, retrieve information, and store information. Most of this API is handling data retrieval from either Google or my database.
 
-_Whats Next_: Currently I am storing the session ID in the users table. This should be refactored to have a unique user ID independent of the session ID stored on the session itself. Another issue is paginating the Google API response to handle the event in which a user has more than the maximum retrieval limit.
+_Whats Next_: Currently I am storing the session ID in the users table. This should be refactored to have a unique user ID independent of the session ID stored on the session itself. Another issue is paginating the Google API response to handle the event in which a user has more than the maximum retrieval limit. Finally I would also look to implement a more comprehensive logging library instead of just using console.log.
 
 ### Database (PostgreSQL)
 
