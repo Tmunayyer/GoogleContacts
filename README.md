@@ -11,7 +11,7 @@
 
 ## The Application
 
-Try the application out [here](ec2-18-216-92-85.us-east-2.compute.amazonaws.com) or you can set it up locally with the following instructions.
+Try the application out [here](http://ec2-18-216-92-85.us-east-2.compute.amazonaws.com) or you can set it up locally with the following instructions.
 
 ### Local Setup
 
