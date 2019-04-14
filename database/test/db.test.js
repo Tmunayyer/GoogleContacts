@@ -1,4 +1,4 @@
-const pg = require('../index.js');
+const pg = require('../index.js').client;
 const dbHelpers = require('../query.js');
 
 const testUtil = require('./testHelpers.js');

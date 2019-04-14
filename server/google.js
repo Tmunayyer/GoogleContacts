@@ -77,22 +77,22 @@ helpers.getGoogleContacts = (session, cb) => {
   pg.hasToken(session, (err, token) => {
     if (err) {
       console.log('Error getting token inside getGoogleContacts', err);
-      cb(err);
-    } else {
-      oAuth2Client.setCredentials(token);
-      const people = google.people({
-        version: 'v1',
-        auth: oAuth2Client
-      });
-      people.people.connections.list(peopleReqParams, (err, data) => {
-        if (err) {
-          cb(err);
-        } else {
-          const myData = data.data;
-          cb(null, myData);
-        }
-      });
+      return cb(err);
     }
+
+    oAuth2Client.setCredentials(token);
+    const people = google.people({
+      version: 'v1',
+      auth: oAuth2Client
+    });
+    people.people.connections.list(peopleReqParams, (err, data) => {
+      if (err) {
+        return cb(err);
+      }
+
+      const myData = data.data;
+      cb(null, myData);
+    });
   });
 };
 
@@ -116,11 +116,11 @@ helpers.getSyncContacts = (session, cb) => {
       delete peopleReqParams.syncToken;
 
       if (err) {
-        cb(err);
-      } else {
-        const myData = data.data;
-        pg.saveContacts(session, myData, cb);
+        return cb(err);
       }
+
+      const myData = data.data;
+      pg.saveContacts(session, myData, cb);
     });
   });
 };
@@ -134,10 +134,10 @@ helpers.getUserInfo = (token, cb) => {
   });
   withAuth.userinfo.v2.me.get((err, data) => {
     if (err) {
-      cb(err, data);
-    } else {
-      cb(null, data);
+      return cb(err, data);
     }
+
+    cb(null, data);
   });
 };
 

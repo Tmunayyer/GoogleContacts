@@ -61,7 +61,7 @@ npm start
 2. Run npm test
 
 ```
-npm run test
+npm test
 ```
 
 ## The Problem
@@ -121,6 +121,10 @@ The schemas can be seen [here](https://github.com/Tmunayyer/GoogleContacts/blob/
 Since sessions and access_keys are replaced, I used Google's API IDs as my foreign key contraint in the comments table. This ensure that if a user visits the website from multiple devices or revokes and reapproves access, we wont have duplicate users.
 
 No ORM is being used. The queries for this application are somewhat simple. Continued devlopment might see additional tables needed as well as more complex queries. At that point an ORM might be useful.
+
+#### Security
+
+Because this simple application is able to get some sensitive information DB security is an issue. For my deployed service I confgiured PostgreSQL to only allow connection from local Docker images. Additionally I use a environment variable set at the build of the image for the DB password.
 
 ## Other Projects
 

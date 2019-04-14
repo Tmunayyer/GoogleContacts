@@ -21,13 +21,13 @@ helpers.hasToken = (session, cb) => {
   let values = [session];
   pg.query(text, values, (err, result) => {
     if (err) {
-      cb(err);
+      return cb(err);
+    }
+
+    if (result.rows[0] === undefined) {
+      cb(null, false);
     } else {
-      if (result.rows[0] === undefined) {
-        cb(null, false);
-      } else {
-        cb(null, result.rows[0]);
-      }
+      cb(null, result.rows[0]);
     }
   });
 };
@@ -108,33 +108,35 @@ helpers.saveContacts = (session, googleData, cb) => {
   //grab user id from db
   getUserGoogleId(session, (err, googleuser) => {
     if (err) {
-      cb(err);
-    } else {
-      let token = googleData.nextSyncToken;
-      saveSyncToken(token, googleuser, (err, result) => {
-        if (err) {
-          cb(err);
-        } else if (googleData.connections !== undefined) {
-          let values = formatContactData(googleuser, googleData);
-          let queryString = format(
-            `INSERT INTO comments (users_googleuser, name, phone_number, email)
-             VALUES %L`,
-            values
-          );
-          pg.query(queryString, (err, result) => {
-            if (err) {
-              cb(err);
-            } else {
-              //pass true to declare new contacts
-              cb(null, true);
-            }
-          });
-        } else {
-          //pass false to declare no new contacts
-          cb(null, false);
-        }
-      });
+      return cb(err);
     }
+
+    let token = googleData.nextSyncToken;
+    saveSyncToken(token, googleuser, (err, result) => {
+      if (err) {
+        return cb(err);
+      }
+
+      if (googleData.connections !== undefined) {
+        let values = formatContactData(googleuser, googleData);
+        let queryString = format(
+          `INSERT INTO comments (users_googleuser, name, phone_number, email)
+             VALUES %L`,
+          values
+        );
+        pg.query(queryString, (err, result) => {
+          if (err) {
+            cb(err);
+          } else {
+            //pass true to declare new contacts
+            cb(null, true);
+          }
+        });
+      } else {
+        //pass false to declare no new contacts
+        cb(null, false);
+      }
+    });
   });
 };
 
@@ -142,22 +144,22 @@ helpers.getComments = (session, cb) => {
   //grab users google id
   getUserGoogleId(session, (err, googleuser) => {
     if (err) {
-      cb(err);
-    } else {
-      //retrieve comments made by user_googleuser
-      let text = `SELECT id, name, phone_number, email, comment
+      return cb(err);
+    }
+
+    //retrieve comments made by user_googleuser
+    let text = `SELECT id, name, phone_number, email, comment
                   FROM comments
                   WHERE users_googleuser=$1
                   ORDER BY name ASC;`;
-      let values = [googleuser];
-      pg.query(text, values, (err, comments) => {
-        if (err) {
-          cb(err, null);
-        } else {
-          cb(null, comments.rows);
-        }
-      });
-    }
+    let values = [googleuser];
+    pg.query(text, values, (err, comments) => {
+      if (err) {
+        cb(err, null);
+      } else {
+        cb(null, comments.rows);
+      }
+    });
   });
 };
 
