@@ -19,14 +19,7 @@ The application is Dockerized and deployed on an EC2 instance.
 
 1. Install [PostgreSQL](https://www.postgresql.org/).
 2. Install [Node.js](https://nodejs.org/en/).
-3. Retrieve credentials for [Google's API](https://console.developers.google.com) by following these instructions:
-
-![credentials](documentation/images/credentials.png)
-![createCredentials](documentation/images/createCredentials.png)
-![oAuth](documentation/images/oAuthClient.png)
-![webapp](documentation/images/WebApp.png)
-![inputs](documentation/images/inputs.png)
-![download](documentation/images/download.png)
+3. Retrieve credentials for [Google's API](https://console.developers.google.com) by following [this guide](https://gist.github.com/Tmunayyer/379b2e9bee5ba7b8b299457cb524b608).
 
 4. Clone this repository.
 
