@@ -19,14 +19,22 @@ The application is Dockerized and deployed on an EC2 instance.
 
 1. Install [PostgreSQL](https://www.postgresql.org/).
 2. Install [Node.js](https://nodejs.org/en/).
-3. Retrieve credentials for [Google's API](https://console.developers.google.com).
+3. Retrieve credentials for [Google's API](https://console.developers.google.com) by following these instructions:
+
+![credentials](documentation/images/credentials.png)
+![createCredentials](documentation/images/createCredentials.png)
+![oAuth](documentation/images/oAuthClient.png)
+![webapp](documentation/images/WebApp.png)
+![inputs](documentation/images/inputs.png)
+![download](documentation/images/download.png)
+
 4. Clone this repository.
 
 ```
 $ git clone https://github.com/Tmunayyer/GoogleContacts.git
 ```
 
-5. Place credentials.json into the server file. Ensure credentials.json is gitignored.
+5. Place the credentials downloaded from google into the server file of the repository. Rename the file to: credentials.json and ensure credentials.json is gitignored.
 
 6. Create PostgreSQL database "comtacts".
 
