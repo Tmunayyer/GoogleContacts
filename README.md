@@ -97,7 +97,7 @@ I built out a single page application that was able to render the list of contac
 
 I also built a sync button that would allow a user to sync their contact list manually with the Google Contacts application. This was mostly for convenience for the user's sake. If they are adding contacts and commenting on them actively, they can manually request a sync without having to leave the page or waiting for any type of lazy check implementation. In an ideal world the application would sync on a page visit as well as having the manual feature.
 
-_Whats Next_: The next thing I would implement on this project would most likely be a search bar to make it easier to find a specific contact. After that, maybe a more cohesive login/logout functionality.
+_Whats Next_: The next thing I would implement on this project would most likely be a search bar to make it easier to find a specific contact. After that, maybe a more cohesive login/logout functionality. There is also the matter of handling errors more effectively. Right now I just console.log them, in a more polished I would want something displayed on the page letting the client know there was an error so they arent left waiting.
 
 ### Server (Node, Express)
 

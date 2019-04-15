@@ -4,7 +4,7 @@ import { Component } from 'react';
 import Navbar from './components/Navbar.jsx';
 import Feed from './components/Feed.jsx';
 
-//exported axios calls for *hopefully* cleaner app component.
+//exported axios calls for cleaner app component.
 import helpers from './utilities.js';
 
 class App extends Component {
@@ -42,17 +42,6 @@ class App extends Component {
       if (err) {
         console.log('error saving comment');
       } else {
-        /*
-
-          The extre api call here might not be necessary. If the API
-          ends up being a bit bogged down by calls we could be more 
-          thorough here and when we get a good response just edit state
-          ourselves. If we have handled errors correctly in API we should
-          not have problems of misrepresented data.
-
-          This way is simpler for now.
-
-        */
         this.getData();
       }
     });

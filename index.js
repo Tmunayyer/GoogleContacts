@@ -7,6 +7,7 @@ const getSession = require('./server/session.js');
 const pg = require('./database/query.js');
 const google = require('./server/google.js');
 
+//set up server
 const app = express();
 const port = 4000;
 
@@ -56,7 +57,6 @@ app.get('/googAutherized', (req, res) => {
     //retrieve google's id for user
     google.getUserInfo(token, (err, { data }) => {
       if (err) {
-        console.log('From /googAutherized');
         console.log('Error getting user info from Google:', err);
         return handleInternalServerError(res);
       }
@@ -64,7 +64,6 @@ app.get('/googAutherized', (req, res) => {
       //save user to DB
       pg.saveUser(data.id, token.access_token, req.sessionID, (err) => {
         if (err) {
-          console.log('From /googAutherized');
           console.log('Error saving data to DB', err);
           return handleInternalServerError(res);
         }

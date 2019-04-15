@@ -5,7 +5,6 @@ const pgSession = require('connect-pg-simple')(session);
 const NODE_ENV = process.env.NODE_ENV;
 const SECRET = process.env.SECRET;
 
-//tell pgSession where to connect
 const pgConObj = require('../database/index.js').connectObj;
 
 //middlewear that will provide session/cookies
@@ -15,7 +14,7 @@ const getSession = (req, res, next) => {
       //get unique ID
       return uuid();
     },
-    //use pg as session store
+    //use pg as session store, pass connection object
     store: new pgSession({ conObject: pgConObj }),
     //sign the cookie with this secret
     secret: NODE_ENV === 'PROD' ? SECRET : 'BladeRunner',

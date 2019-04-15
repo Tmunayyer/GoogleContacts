@@ -24,7 +24,6 @@ helpers.saveComment = (data, cb) => {
     })
     .then((res) => {
       cb(null, res);
-      //good save, lets update state locally
     });
 };
 

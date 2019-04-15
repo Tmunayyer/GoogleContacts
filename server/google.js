@@ -9,18 +9,14 @@ let CRED_FP = process.env.CRED_FP;
 if (NODE_ENV !== 'PROD') {
   CRED_FP = './server/credentials.json';
 }
+
 /* NOTES
 
   oAuth was completely new to me.
   Main source: https://developers.google.com/people/quickstart/nodejs
 
-    Most of what I got from google's quickstart has been tweaked heavily
-    to fit my needs.
-
-
-  When we retrieve the access tokens it would be a good idea to handle
-  the refresh tokens. The google docs explain this but is not important
-  for this project.
+  Most of what I got from google's quickstart has been tweaked heavily
+  to fit my needs.
   
 */
 
@@ -37,9 +33,9 @@ const peopleReqParams = {
   resourceName: 'people/me',
   //TODO: this is the max page size
   // if its possible someone has more (possibly a corporate account)
-  // maybe introduce a pagination in the app?
+  // we need to introduce pagination
   pageSize: '2000',
-  //provide a sync token for late, need to store this in DB
+  //provide a sync token for later, need to store this in DB
   requestSyncToken: true,
   personFields: 'names,phoneNumbers,emailAddresses'
 };
